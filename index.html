@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>온MINIMUM — 온전히, 최소로</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;500&family=Inter:ital,wght@0,200;0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg:           #FAFAF7;
+            --text:         #0F0F0D;
+            --text-muted:   #88887E;
+            --accent:       #C4882A;
+            --border:       #E0DFD6;
+            --gap:          120px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========================
+           NAV
+        ======================== */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 24px 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(250, 250, 247, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.4s;
+        }
+
+        nav.scrolled {
+            border-bottom-color: var(--border);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .nav-mark {
+            width: 30px;
+            height: 30px;
+        }
+
+        .nav-wordmark {
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 300;
+            font-size: 15px;
+            letter-spacing: 0.08em;
+        }
+
+        .nav-wordmark .on { color: var(--accent); }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            letter-spacing: 0.07em;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text); }
+
+        /* ========================
+           HERO
+        ======================== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 48px 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* concentric decorative rings */
+        .hero-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            pointer-events: none;
+        }
+
+        .hero-ring-1 { width: 420px; height: 420px; }
+        .hero-ring-2 { width: 680px; height: 680px; opacity: 0.55; }
+        .hero-ring-3 { width: 960px; height: 960px; opacity: 0.25; }
+
+        .hero-logo {
+            width: 160px;
+            height: 160px;
+            margin-bottom: 44px;
+            position: relative;
+            z-index: 1;
+            animation: logoDrift 8s ease-in-out infinite;
+        }
+
+        @keyframes logoDrift {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-8px); }
+        }
+
+        .hero-title {
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 200;
+            font-size: clamp(52px, 9vw, 104px);
+            letter-spacing: -0.025em;
+            line-height: 1.05;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title .on { color: var(--accent); }
+
+        .hero-tagline {
+            font-size: clamp(13px, 1.6vw, 16px);
+            color: var(--text-muted);
+            letter-spacing: 0.18em;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-sep {
+            display: inline-block;
+            margin: 0 16px;
+            opacity: 0.4;
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 44px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            z-index: 1;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hero-scroll-line {
+            width: 1px;
+            height: 44px;
+            background: linear-gradient(to bottom, var(--text-muted), transparent);
+            animation: pulse 2.2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        /* ========================
+           SECTION BASE
+        ======================== */
+        .section-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: var(--gap) 52px;
+        }
+
+        .section-label {
+            font-size: 10px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 36px;
+            font-weight: 400;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ========================
+           ABOUT
+        ======================== */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.65fr;
+            gap: 88px;
+            align-items: start;
+        }
+
+        .about-heading {
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 300;
+            font-size: clamp(28px, 3.8vw, 46px);
+            line-height: 1.45;
+            letter-spacing: -0.01em;
+            position: sticky;
+            top: 100px;
+        }
+
+        .about-body p {
+            font-size: 15.5px;
+            line-height: 2;
+            color: #484840;
+            margin-bottom: 28px;
+        }
+
+        .about-body p:last-child { margin-bottom: 0; }
+
+        .about-body .ko-quote {
+            border-left: 2px solid var(--accent);
+            padding-left: 20px;
+            font-family: 'Noto Serif KR', serif;
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        /* ========================
+           VALUES
+        ======================== */
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            margin-top: 52px;
+            border: 1px solid var(--border);
+        }
+
+        .value-card {
+            padding: 52px 44px;
+            border-right: 1px solid var(--border);
+            transition: background 0.35s;
+        }
+
+        .value-card:last-child { border-right: none; }
+
+        .value-card:hover {
+            background: rgba(196, 136, 42, 0.04);
+        }
+
+        .value-num {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            color: var(--accent);
+            letter-spacing: 0.22em;
+            margin-bottom: 36px;
+            font-weight: 400;
+        }
+
+        .value-title-ko {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 6px;
+        }
+
+        .value-title-en {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: var(--text-muted);
+            letter-spacing: 0.12em;
+            font-weight: 300;
+            margin-bottom: 24px;
+        }
+
+        .value-desc {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            line-height: 1.85;
+        }
+
+        /* ========================
+           QUOTE BAND
+        ======================== */
+        .quote-band {
+            text-align: center;
+            padding: var(--gap) 52px;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            background: rgba(196, 136, 42, 0.025);
+        }
+
+        .quote-text {
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 200;
+            font-size: clamp(26px, 4.5vw, 56px);
+            line-height: 1.45;
+            letter-spacing: -0.02em;
+        }
+
+        .quote-text .on { color: var(--accent); }
+
+        .quote-sub {
+            margin-top: 28px;
+            font-size: 13px;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ========================
+           CONTACT
+        ======================== */
+        .contact-inner {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .contact-heading {
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 300;
+            font-size: clamp(28px, 3.5vw, 42px);
+            line-height: 1.45;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .contact-item-label {
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .contact-item-value {
+            font-size: 15px;
+            color: var(--text);
+            letter-spacing: 0.02em;
+        }
+
+        /* ========================
+           FOOTER
+        ======================== */
+        footer {
+            padding: 40px 52px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-logo {
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 300;
+            font-size: 14px;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-logo .on { color: var(--accent); }
+
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ========================
+           RESPONSIVE
+        ======================== */
+        @media (max-width: 900px) {
+            nav { padding: 20px 28px; }
+            .nav-links { display: none; }
+
+            .hero { padding: 100px 28px 90px; }
+            .hero-ring-1 { width: 280px; height: 280px; }
+            .hero-ring-2 { width: 460px; height: 460px; }
+            .hero-ring-3 { display: none; }
+
+            .section-wrap { padding: 72px 28px; }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .about-heading { position: static; }
+
+            .values-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .value-card {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .value-card:last-child { border-bottom: none; }
+
+            .quote-band { padding: 72px 28px; }
+
+            .contact-inner {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 14px;
+                text-align: center;
+                padding: 36px 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========================
+         NAV
+    ======================== -->
+    <nav id="main-nav">
+        <a href="#home" class="nav-logo">
+            <!-- Compact logo mark -->
+            <svg class="nav-mark" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="15" cy="15" r="13.5" stroke="#0F0F0D" stroke-width="0.9"/>
+                <circle cx="15" cy="15" r="2.6" fill="#C4882A"/>
+            </svg>
+            <span class="nav-wordmark"><span class="on">온</span>MINIMUM</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#about">소개</a></li>
+            <li><a href="#values">철학</a></li>
+            <li><a href="#services">서비스</a></li>
+            <li><a href="#contact">연락처</a></li>
+        </ul>
+    </nav>
+
+    <!-- ========================
+         HERO
+    ======================== -->
+    <section class="hero" id="home">
+        <!-- Decorative concentric rings -->
+        <div class="hero-ring hero-ring-1"></div>
+        <div class="hero-ring hero-ring-2"></div>
+        <div class="hero-ring hero-ring-3"></div>
+
+        <!--
+            LOGO MARK
+            Outer circle  = 온 (온전함 · 완전함)
+            Dashed ring   = MINIMUM (경계, 최소한의 윤곽)
+            Center dot    = On (켜진 상태, 빛의 기원)
+        -->
+        <img src="image.png" class="hero-logo" alt="온MINIMUM 로고">
+
+        <h1 class="hero-title">
+            <span class="on">온</span>MINIMUM
+        </h1>
+
+        <p class="hero-tagline">
+            온전히, 최소로
+            <span class="hero-sep">·</span>
+            Wholly, Minimally
+        </p>
+
+        <div class="hero-scroll">
+            <div class="hero-scroll-line"></div>
+            <span>scroll</span>
+        </div>
+    </section>
+
+    <!-- ========================
+         ABOUT
+    ======================== -->
+    <section id="about">
+        <div class="section-wrap">
+            <div class="about-grid">
+                <div>
+                    <p class="section-label">About</p>
+                    <h2 class="about-heading">
+                        최소에서<br>온전함을<br>찾습니다.
+                    </h2>
+                </div>
+                <div class="about-body">
+                    <p>
+                        온MINIMUM은 "온전한 최소"를 추구하는 회사입니다.
+                        불필요한 것을 걷어내고 본질만을 남겼을 때,
+                        비로소 완전함이 드러난다고 믿습니다.
+                    </p>
+                    <p>
+                        "온"은 두 가지 의미를 품고 있습니다.
+                        한국어로 <em>온전하다</em>의 온—전체, 완전함, 결핍 없음.
+                        영어로 <em>On</em>—켜진 상태, 활성화, 존재의 시작.
+                        우리는 이 두 의미가 만나는 지점에 있습니다.
+                    </p>
+                    <p class="ko-quote">
+                        "더 이상 뺄 것이 없을 때 완성된다."<br>
+                        <span style="font-size:13px; letter-spacing:0.05em;">— 앙투안 드 생텍쥐페리</span>
+                    </p>
+                    <p>
+                        최소한의 것으로 최대한의 의미를 만드는 것.
+                        그것이 온MINIMUM이 세상에 존재하는 이유입니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================
+         VALUES
+    ======================== -->
+    <section id="values">
+        <div class="section-wrap" style="padding-top: 0;">
+            <p class="section-label">Philosophy</p>
+            <div class="values-grid">
+                <div class="value-card">
+                    <p class="value-num">01</p>
+                    <h3 class="value-title-ko">온전함</h3>
+                    <p class="value-title-en">Wholeness</p>
+                    <p class="value-desc">
+                        부분이 아닌 전체를 봅니다.
+                        표면이 아닌 본질을 다룹니다.
+                        어떤 문제든 그 뿌리까지 파고들어
+                        온전한 해답을 만들어냅니다.
+                    </p>
+                </div>
+                <div class="value-card">
+                    <p class="value-num">02</p>
+                    <h3 class="value-title-ko">최소함</h3>
+                    <p class="value-title-en">Minimalism</p>
+                    <p class="value-desc">
+                        더 이상 뺄 것이 없을 때 완성됩니다.
+                        군더더기 없는 명료함,
+                        필요한 것만 남긴 순수한 형태를
+                        끊임없이 추구합니다.
+                    </p>
+                </div>
+                <div class="value-card">
+                    <p class="value-num">03</p>
+                    <h3 class="value-title-ko">켜짐</h3>
+                    <p class="value-title-en">Activation</p>
+                    <p class="value-desc">
+                        잠든 가능성을 깨웁니다.
+                        최소의 형태가 최대로 작동하는 순간,
+                        그것이 우리가 만드는
+                        On의 상태입니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================
+         SERVICES
+    ======================== -->
+    <section id="services">
+        <div class="section-wrap" style="padding-top: 0;">
+            <p class="section-label">Services</p>
+            <div class="values-grid">
+                <div class="value-card">
+                    <p class="value-num">01</p>
+                    <h3 class="value-title-ko">AI 모델 개발·훈련</h3>
+                    <p class="value-title-en">Model Development</p>
+                    <p class="value-desc">
+                        문제의 본질을 해결하기 위한 최적화된 모델을 설계하고 훈련합니다.
+                        불필요한 연산을 걷어낸 최소의, 그러나 가장 강력한 성능을 구현합니다.
+                    </p>
+                </div>
+                <div class="value-card">
+                    <p class="value-num">02</p>
+                    <h3 class="value-title-ko">AI 에이전트 개발</h3>
+                    <p class="value-title-en">Agent Development</p>
+                    <p class="value-desc">
+                        자율적으로 문제를 해결하고 의도를 실현하는 지능형 에이전트를 만듭니다.
+                        고정된 시스템이 아닌 실시간으로 활성화(On)되는 자동화 솔루션입니다.
+                    </p>
+                </div>
+                <div class="value-card">
+                    <p class="value-num">03</p>
+                    <h3 class="value-title-ko">맞춤형 AI 솔루션</h3>
+                    <p class="value-title-en">Custom AI Solution</p>
+                    <p class="value-desc">
+                        최소한의 구조에서 시작해 온전한 전체로 나아가는 유연한 설계를 지향합니다.
+                        화려함보다 인간 중심의 핵심 로직과 워크플로우에 집중합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================
+         QUOTE BAND
+    ======================== -->
+    <div class="quote-band">
+        <p class="quote-text">
+            <span class="on">온</span>전한 것은<br>
+            언제나 가장 작은 것에서<br>
+            시작됩니다.
+        </p>
+        <p class="quote-sub">The most complete things always begin from the smallest.</p>
+    </div>
+
+    <!-- ========================
+         CONTACT
+    ======================== -->
+    <section id="contact">
+        <div class="section-wrap">
+            <p class="section-label">Contact</p>
+            <div class="contact-inner">
+                <div class="contact-heading">
+                    함께<br>
+                    <span style="color: var(--accent);">온</span>전한 것을<br>
+                    만들어요.
+                </div>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span class="contact-item-label">Email</span>
+                        <span class="contact-item-value">contact@onminimum.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-item-label">Location</span>
+                        <span class="contact-item-value">Seoul, Korea</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================
+         FOOTER
+    ======================== -->
+    <footer>
+        <div class="footer-logo">
+            <!-- small footer mark -->
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <circle cx="11" cy="11" r="10" stroke="#0F0F0D" stroke-width="0.8"/>
+                <circle cx="11" cy="11" r="2.2" fill="#C4882A"/>
+            </svg>
+            <span><span class="on">온</span>MINIMUM</span>
+        </div>
+        <div class="footer-copy">
+            &copy; 2025 온MINIMUM. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Nav border on scroll
+        const nav = document.getElementById('main-nav');
+        const onScroll = () => {
+            nav.classList.toggle('scrolled', window.scrollY > 10);
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+    </script>
+
+</body>
+</html>

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notice — onMINIMUM</title>
+    <meta name="description" content="onMINIMUM notices">
+    <!-- Fonts only matter for the onmin theme (in-site embed), but preconnected here. -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;500&family=Inter:ital,wght@0,200;0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
@@ -11,236 +13,198 @@
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+        /* =========================================================
+           This page is the "notice source" pulled in via iframe externally.
+           - default (plain) theme : neutral, featureless list box
+           - ?theme=onmin          : styled to match the onMINIMUM site
+           Always keep the newest notice at the top.
+           ========================================================= */
+
         :root {
-            --bg:           #FAFAF7;
-            --text:         #0F0F0D;
-            --text-muted:   #88887E;
-            --accent:       #C4882A;
-            --border:       #E0DFD6;
+            --line:   #dcdcd6;
+            --txt:    #1c1c1a;
+            --muted:  #8a8a82;
+            --tag:    #5a5a52;
+            --hover:  rgba(0, 0, 0, 0.015);
         }
 
-        html { scroll-behavior: smooth; }
+        html, body { background: transparent; }
 
         body {
-            background: var(--bg);
-            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, "Helvetica Neue", "Noto Sans KR", sans-serif;
+            color: var(--txt);
+            line-height: 1.65;
+            font-size: 15px;
+            -webkit-font-smoothing: antialiased;
+            padding: 16px;
+        }
+
+        .board {
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .row {
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--line);
+            transition: background 0.2s;
+        }
+
+        .row:last-child { border-bottom: none; }
+        .row:hover { background: var(--hover); }
+
+        .row-head {
+            display: flex; align-items: center; gap: 10px;
+            flex-wrap: wrap; margin-bottom: 8px;
+        }
+
+        .tag {
+            font-size: 11px; letter-spacing: 0.04em;
+            color: var(--tag);
+            border: 1px solid var(--line);
+            border-radius: 2px;
+            padding: 1px 8px;
+        }
+
+        .date {
+            font-size: 12px; color: var(--muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .subject {
+            font-size: 16px; font-weight: 600;
+            line-height: 1.4; margin-bottom: 6px;
+        }
+
+        .content {
+            font-size: 14px; color: #4a4a44; line-height: 1.8;
+        }
+
+        .empty {
+            padding: 48px 20px; text-align: center;
+            color: var(--muted); font-size: 14px;
+        }
+
+        /* =========================================================
+           ONMIN theme — matches the onMINIMUM site (iframe parent)
+           Applied only when body.theme-onmin
+           ========================================================= */
+        body.theme-onmin {
+            --accent: #C4882A;
+            --border: #E0DFD6;
+            background: transparent;
+            color: #0F0F0D;
             font-family: 'Inter', 'Noto Sans KR', sans-serif;
             font-weight: 300;
             line-height: 1.7;
-            -webkit-font-smoothing: antialiased;
+            padding: 0;
         }
 
-        /* NAV */
-        nav {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 100;
-            padding: 24px 52px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(250, 250, 247, 0.88);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border);
+        body.theme-onmin .board {
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            overflow: visible;
         }
 
-        .nav-logo {
-            display: flex; align-items: center; gap: 12px;
-            text-decoration: none; color: var(--text);
-        }
-
-        .nav-mark { width: 30px; height: 30px; }
-
-        .nav-wordmark {
-            font-family: 'Noto Serif KR', serif;
-            font-weight: 300; font-size: 15px; letter-spacing: 0.08em;
-        }
-
-        .nav-wordmark .on { color: var(--accent); }
-
-        .nav-links { display: flex; gap: 40px; list-style: none; }
-
-        .nav-links a {
-            text-decoration: none; color: var(--text-muted);
-            font-size: 13px; letter-spacing: 0.07em; transition: color 0.2s;
-        }
-
-        .nav-links a:hover { color: var(--text); }
-        .nav-links a.active { color: var(--text); }
-
-        .nav-lang {
-            color: var(--accent) !important;
-            font-family: 'Inter', sans-serif;
-            letter-spacing: 0.1em; font-weight: 400;
-        }
-
-        /* PAGE HEADER */
-        .page-head {
-            max-width: 880px;
-            margin: 0 auto;
-            padding: 200px 52px 60px;
-            text-align: center;
-        }
-
-        .page-label {
-            font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
-            color: var(--accent); margin-bottom: 24px; font-weight: 400;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .page-title {
-            font-family: 'Noto Serif KR', serif;
-            font-weight: 200;
-            font-size: clamp(38px, 6vw, 64px);
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-        }
-
-        .page-sub {
-            margin-top: 18px;
-            color: var(--text-muted);
-            font-size: 14px; letter-spacing: 0.05em;
-        }
-
-        /* NOTICE LIST */
-        .notice-wrap {
-            max-width: 880px;
-            margin: 0 auto;
-            padding: 40px 52px 140px;
-        }
-
-        .notice-item {
+        body.theme-onmin .row {
+            border-bottom: none;
             border-top: 1px solid var(--border);
             padding: 40px 4px;
             transition: background 0.3s;
         }
 
-        .notice-item:last-child { border-bottom: 1px solid var(--border); }
-        .notice-item:hover { background: rgba(196, 136, 42, 0.03); }
+        body.theme-onmin .row:last-child { border-bottom: 1px solid var(--border); }
+        body.theme-onmin .row:hover { background: rgba(196, 136, 42, 0.03); }
 
-        .notice-meta {
-            display: flex; align-items: center; gap: 16px;
-            margin-bottom: 14px;
+        body.theme-onmin .row-head {
+            gap: 16px; margin-bottom: 14px;
         }
 
-        .notice-cat {
+        body.theme-onmin .tag {
             font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
             color: var(--accent); font-family: 'Inter', sans-serif;
             border: 1px solid var(--accent);
-            padding: 3px 10px; border-radius: 2px;
+            border-radius: 2px; padding: 3px 10px;
         }
 
-        .notice-date {
-            font-size: 12px; color: var(--text-muted);
+        body.theme-onmin .date {
+            font-size: 12px; color: #88887E;
             font-family: 'Inter', sans-serif; letter-spacing: 0.04em;
         }
 
-        .notice-title {
+        body.theme-onmin .subject {
             font-family: 'Noto Serif KR', serif;
             font-weight: 400; font-size: 21px;
-            margin-bottom: 14px; line-height: 1.45;
+            line-height: 1.45; margin-bottom: 14px;
         }
 
-        .notice-body {
+        body.theme-onmin .content {
             font-size: 14.5px; line-height: 1.95; color: #484840;
         }
 
-        .notice-empty {
-            text-align: center; color: var(--text-muted);
-            padding: 60px 0; font-size: 14px;
-        }
-
-        /* FOOTER */
-        footer {
-            padding: 40px 52px;
-            border-top: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
-        }
-
-        .footer-logo {
-            font-family: 'Noto Serif KR', serif; font-weight: 300;
-            font-size: 14px; letter-spacing: 0.08em;
-            display: flex; align-items: center; gap: 10px;
-        }
-
-        .footer-logo .on { color: var(--accent); }
-
-        .footer-copy {
-            font-size: 12px; color: var(--text-muted);
-            letter-spacing: 0.05em; font-family: 'Inter', sans-serif;
-        }
-
-        @media (max-width: 900px) {
-            nav { padding: 20px 28px; }
-            .nav-links { gap: 22px; }
-            .page-head { padding: 150px 28px 40px; }
-            .notice-wrap { padding: 30px 28px 100px; }
-            footer { flex-direction: column; gap: 14px; text-align: center; padding: 36px 28px; }
-        }
+        body.theme-onmin .empty { color: #88887E; }
     </style>
 </head>
 <body>
 
-    <!-- NAV -->
-    <nav id="main-nav">
-        <a href="/en/" class="nav-logo">
-            <svg class="nav-mark" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="15" cy="15" r="13.5" stroke="#0F0F0D" stroke-width="0.9"/>
-                <circle cx="15" cy="15" r="2.6" fill="#C4882A"/>
-            </svg>
-            <span class="nav-wordmark"><span class="on">on</span>MINIMUM</span>
-        </a>
-        <ul class="nav-links">
-            <li><a href="/en/#about">About</a></li>
-            <li><a href="/en/#values">Philosophy</a></li>
-            <li><a href="/en/#services">Services</a></li>
-            <li><a href="/notice/en/" class="active">Notice</a></li>
-            <li><a href="/notice/kr/" class="nav-lang">KO</a></li>
-        </ul>
-    </nav>
+    <!--
+        ▸ To add a new notice:
+          copy the <article class="row"> block below, paste it at the TOP of board,
+          and edit the category (tag) / date / title (subject) / body (content).
+          Always keep the newest notice on top.
+    -->
+    <div class="board">
 
-    <!-- PAGE HEADER -->
-    <header class="page-head">
-        <p class="page-label">Notice</p>
-        <h1 class="page-title">Notice</h1>
-        <p class="page-sub">News and announcements from onMINIMUM.</p>
-    </header>
-
-    <!-- NOTICE LIST -->
-    <main class="notice-wrap">
-        <!--
-            ▸ To add a new notice: copy the <article class="notice-item"> block below,
-              paste it at the top, and edit the date / category / title / body.
-        -->
-        <article class="notice-item">
-            <div class="notice-meta">
-                <span class="notice-cat">News</span>
-                <span class="notice-date">2026.06.03</span>
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">News</span>
+                <span class="date">2026.06.03</span>
             </div>
-            <h2 class="notice-title">onMINIMUM official website launch</h2>
-            <p class="notice-body">
+            <h2 class="subject">onMINIMUM official website launch</h2>
+            <p class="content">
                 The official onMINIMUM website is now open.
                 Under the philosophy of the "whole minimum," we present AI solutions
                 that strip away the unnecessary and focus on the essence.
                 From here on, we will share service news and announcements through this page.
             </p>
         </article>
-    </main>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="footer-logo">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                <circle cx="11" cy="11" r="10" stroke="#0F0F0D" stroke-width="0.8"/>
-                <circle cx="11" cy="11" r="2.2" fill="#C4882A"/>
-            </svg>
-            <span><span class="on">on</span>MINIMUM</span>
-        </div>
-        <div class="footer-copy">
-            &copy; 2025 onMINIMUM. All rights reserved.
-        </div>
-    </footer>
+    </div>
+
+    <script>
+        // Theme: ?theme=onmin renders with the onMINIMUM site design
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('theme') === 'onmin') {
+                document.body.classList.add('theme-onmin');
+            }
+        })();
+
+        // iframe auto-height: report content height to the parent (avoids inner scrollbars)
+        (function () {
+            if (window.parent === window) return; // standalone page: skip
+
+            function postHeight() {
+                var h = Math.ceil(document.body.getBoundingClientRect().height);
+                window.parent.postMessage(
+                    { type: 'onmin-notice-height', height: h }, '*'
+                );
+            }
+
+            window.addEventListener('load', postHeight);
+            window.addEventListener('resize', postHeight);
+
+            if (window.ResizeObserver) {
+                new ResizeObserver(postHeight).observe(document.body);
+            } else {
+                setTimeout(postHeight, 400);
+            }
+        })();
+    </script>
 
 </body>
 </html>

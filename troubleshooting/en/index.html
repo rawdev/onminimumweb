@@ -111,6 +111,57 @@
             font-size: 14px; color: #4a4a44; line-height: 1.8;
         }
 
+        /* Click-to-expand detail — only applied to items that have a detail block */
+        .row.has-detail { position: relative; cursor: pointer; }
+        .row.has-detail .subject { padding-right: 28px; }
+
+        .row-toggle {
+            position: absolute; top: 20px; right: 20px;
+            width: 16px; height: 16px;
+            stroke: var(--muted); fill: none;
+            transition: transform 0.25s ease;
+            pointer-events: none;
+        }
+        .row.open .row-toggle { transform: rotate(180deg); }
+
+        .detail {
+            display: none;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px dashed var(--line);
+            font-size: 14px; color: #4a4a44; line-height: 1.8;
+        }
+        .row.open .detail { display: block; }
+        .detail p + p { margin-top: 10px; }
+
+        /* Rich content inside detail (headings, code, tables, lists) */
+        .detail h3 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; line-height: 1.4; }
+        .detail h3:first-child { margin-top: 0; }
+        .detail h4 { font-size: 14px; font-weight: 600; margin: 16px 0 6px; }
+        .detail ul, .detail ol { margin: 8px 0 8px 20px; }
+        .detail li { margin: 3px 0; }
+        .detail pre {
+            background: #f4f4ef; border: 1px solid var(--line); border-radius: 4px;
+            padding: 12px 14px; margin: 10px 0; overflow-x: auto;
+            font-size: 12.5px; line-height: 1.6;
+        }
+        .detail pre code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            color: #2b2b27; white-space: pre;
+        }
+        .detail :not(pre) > code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            background: #f0f0ea; border-radius: 3px; padding: 1px 5px; font-size: 0.88em;
+            word-break: break-all;
+        }
+        .detail table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+        .detail th, .detail td { border: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+        .detail th { background: #f4f4ef; font-weight: 600; }
+        .detail blockquote {
+            margin: 10px 0; padding: 8px 14px; border-left: 3px solid var(--line);
+            color: var(--muted); background: rgba(0, 0, 0, 0.015);
+        }
+
         .empty {
             padding: 48px 20px; text-align: center;
             color: var(--muted); font-size: 14px;
@@ -180,6 +231,22 @@
             font-size: 14.5px; line-height: 1.95; color: #484840;
         }
 
+        body.theme-onmin .row.has-detail .subject { padding-right: 28px; }
+        body.theme-onmin .row-toggle { top: 38px; right: 4px; stroke: var(--accent); }
+        body.theme-onmin .detail {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px dashed var(--border);
+            font-size: 14.5px; line-height: 1.95; color: #484840;
+        }
+        body.theme-onmin .detail pre { background: rgba(15, 15, 13, 0.035); border-color: var(--border); }
+        body.theme-onmin .detail :not(pre) > code { background: rgba(15, 15, 13, 0.05); }
+        body.theme-onmin .detail th, body.theme-onmin .detail td { border-color: var(--border); }
+        body.theme-onmin .detail th { background: rgba(196, 136, 42, 0.06); }
+        body.theme-onmin .detail blockquote {
+            border-left-color: var(--accent); color: #6a6a62; background: rgba(196, 136, 42, 0.04);
+        }
+
         body.theme-onmin .empty { color: #88887E; }
     </style>
 </head>
@@ -200,6 +267,11 @@
         ▸ To add a new item:
           copy the <article class="row"> block below, paste it at the TOP of board,
           and edit the category (tag) / title (subject) / body (content).
+
+        ▸ To add a detail section:
+          put a <div class="detail">...</div> block inside an item, and it will
+          expand below the box when the box is clicked. Items without a detail
+          block are not clickable / not expandable.
     -->
     <div class="board" id="ts-board">
 
@@ -212,6 +284,16 @@
                 After installing the MCP in Claude Desktop, if you can't verify
                 that it's working, type "Check the Mweft MCP tools" in the chat window.
             </p>
+            <div class="detail">
+                <p>
+                    Typing the sentence above in the chat asks MemoryWeft MCP to report
+                    whether it's connected, along with the list of available tools.
+                </p>
+                <p>
+                    If the tools still don't show up, fully quit Claude Desktop, relaunch it,
+                    and try the same prompt once more.
+                </p>
+            </div>
         </article>
 
     </div>
@@ -252,6 +334,34 @@
             }
 
             input.addEventListener('input', filter);
+        })();
+
+        // Click-to-expand detail: only items with a detail block become toggleable
+        (function () {
+            var CHEVRON =
+                '<svg class="row-toggle" viewBox="0 0 24 24" stroke-width="2" ' +
+                'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+                '<polyline points="6 9 12 15 18 9"></polyline></svg>';
+
+            document.querySelectorAll('#ts-board .row').forEach(function (row) {
+                if (!row.querySelector('.detail')) return; // no detail → plain item
+
+                row.classList.add('has-detail');
+                row.insertAdjacentHTML('beforeend', CHEVRON);
+                row.setAttribute('role', 'button');
+                row.setAttribute('tabindex', '0');
+                row.setAttribute('aria-expanded', 'false');
+
+                function toggle() {
+                    var open = row.classList.toggle('open');
+                    row.setAttribute('aria-expanded', open ? 'true' : 'false');
+                }
+
+                row.addEventListener('click', toggle);
+                row.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+                });
+            });
         })();
 
         // iframe auto-height: report content height to the parent (avoids inner scrollbars)

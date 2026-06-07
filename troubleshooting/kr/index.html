@@ -111,6 +111,57 @@
             font-size: 14px; color: #4a4a44; line-height: 1.8;
         }
 
+        /* 클릭하면 펼쳐지는 상세(detail) — detail 블록이 있는 항목에만 적용 */
+        .row.has-detail { position: relative; cursor: pointer; }
+        .row.has-detail .subject { padding-right: 28px; }
+
+        .row-toggle {
+            position: absolute; top: 20px; right: 20px;
+            width: 16px; height: 16px;
+            stroke: var(--muted); fill: none;
+            transition: transform 0.25s ease;
+            pointer-events: none;
+        }
+        .row.open .row-toggle { transform: rotate(180deg); }
+
+        .detail {
+            display: none;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px dashed var(--line);
+            font-size: 14px; color: #4a4a44; line-height: 1.8;
+        }
+        .row.open .detail { display: block; }
+        .detail p + p { margin-top: 10px; }
+
+        /* 상세(detail) 안의 리치 콘텐츠 (제목·코드·표·목록) */
+        .detail h3 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; line-height: 1.4; }
+        .detail h3:first-child { margin-top: 0; }
+        .detail h4 { font-size: 14px; font-weight: 600; margin: 16px 0 6px; }
+        .detail ul, .detail ol { margin: 8px 0 8px 20px; }
+        .detail li { margin: 3px 0; }
+        .detail pre {
+            background: #f4f4ef; border: 1px solid var(--line); border-radius: 4px;
+            padding: 12px 14px; margin: 10px 0; overflow-x: auto;
+            font-size: 12.5px; line-height: 1.6;
+        }
+        .detail pre code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            color: #2b2b27; white-space: pre;
+        }
+        .detail :not(pre) > code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            background: #f0f0ea; border-radius: 3px; padding: 1px 5px; font-size: 0.88em;
+            word-break: break-all;
+        }
+        .detail table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+        .detail th, .detail td { border: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+        .detail th { background: #f4f4ef; font-weight: 600; }
+        .detail blockquote {
+            margin: 10px 0; padding: 8px 14px; border-left: 3px solid var(--line);
+            color: var(--muted); background: rgba(0, 0, 0, 0.015);
+        }
+
         .empty {
             padding: 48px 20px; text-align: center;
             color: var(--muted); font-size: 14px;
@@ -180,6 +231,22 @@
             font-size: 14.5px; line-height: 1.95; color: #484840;
         }
 
+        body.theme-onmin .row.has-detail .subject { padding-right: 28px; }
+        body.theme-onmin .row-toggle { top: 38px; right: 4px; stroke: var(--accent); }
+        body.theme-onmin .detail {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px dashed var(--border);
+            font-size: 14.5px; line-height: 1.95; color: #484840;
+        }
+        body.theme-onmin .detail pre { background: rgba(15, 15, 13, 0.035); border-color: var(--border); }
+        body.theme-onmin .detail :not(pre) > code { background: rgba(15, 15, 13, 0.05); }
+        body.theme-onmin .detail th, body.theme-onmin .detail td { border-color: var(--border); }
+        body.theme-onmin .detail th { background: rgba(196, 136, 42, 0.06); }
+        body.theme-onmin .detail blockquote {
+            border-left-color: var(--accent); color: #6a6a62; background: rgba(196, 136, 42, 0.04);
+        }
+
         body.theme-onmin .empty { color: #88887E; }
     </style>
 </head>
@@ -200,6 +267,11 @@
         ▸ 새 항목 추가 방법:
           아래 <article class="row"> 블록을 복사해 board 맨 위에 붙여넣고
           분류(tag) · 제목(subject) · 내용(content)만 바꾸면 됩니다.
+
+        ▸ 상세(detail) 추가 방법:
+          항목 안에 <div class="detail">...</div> 블록을 넣으면,
+          박스를 클릭했을 때 그 내용이 박스 밑으로 펼쳐집니다.
+          detail 블록이 없는 항목은 클릭해도 펼쳐지지 않습니다.
     -->
     <div class="board" id="ts-board">
 
@@ -212,6 +284,215 @@
                 클로드 데스크탑에 MCP 설치 시, 기능 확인이 어렵다면
                 채팅 창에 'Mweft MCP 도구 확인해줘' 라고 입력하세요.
             </p>
+            <div class="detail">
+                <p>
+                    채팅 창에 위 문장을 입력하면, MemoryWeft MCP가 현재 연결되어 있는지와
+                    사용 가능한 도구 목록을 함께 알려줍니다.
+                </p>
+                <p>
+                    그래도 도구가 확인되지 않는다면 Claude Desktop을 완전히 종료한 뒤
+                    다시 실행하고, 동일한 문장으로 한 번 더 시도해 보세요.
+                </p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">ChatGPT</span>
+            </div>
+            <h2 class="subject">ChatGPT에서 MWeft MCP를 사용하고 싶을 때</h2>
+            <p class="content">
+                ChatGPT 용 MCP 설치는 현재 정식으로 지원하지 않습니다.
+                다만 다음과 같은 방법으로 설치해 볼 수 있습니다.
+            </p>
+            <div class="detail">
+                <p>이 문서는 Windows PC에서 실행되는 로컬 MemoryWeft(MWeft) MCP 서버를 ChatGPT의 사용자 지정 앱으로 연결하는 절차를 설명합니다.</p>
+
+                <h3>1. 연결 구조</h3>
+                <p>MemoryWeft Manager가 제공하는 MCP 서버는 기본적으로 로컬 <code>stdio</code> 방식입니다. ChatGPT는 이 프로세스에 직접 접속할 수 없으므로 다음과 같이 HTTPS MCP 주소로 변환해야 합니다.</p>
+                <pre><code>MWeft stdio MCP
+  -> Supergateway (Streamable HTTP)
+  -> Cloudflare Tunnel (공개 HTTPS)
+  -> ChatGPT 사용자 지정 MCP 앱</code></pre>
+
+                <h3>2. 준비물</h3>
+                <ul>
+                    <li>Windows PowerShell</li>
+                    <li>MemoryWeft Manager 및 생성된 프로젝트</li>
+                    <li>Node.js</li>
+                    <li>Cloudflared</li>
+                    <li>사용자 지정 MCP 앱을 만들 수 있는 ChatGPT 계정</li>
+                </ul>
+                <p>설치 여부를 확인합니다.</p>
+                <pre><code>node --version
+npx.cmd --version
+cloudflared --version</code></pre>
+                <p>PowerShell 실행 정책 때문에 <code>npx</code>가 차단될 수 있습니다. 이 문서에서는 <code>npx</code> 대신 항상 <code>npx.cmd</code>를 사용합니다.</p>
+                <p>Cloudflared가 설치되지 않았다면 다음 명령으로 설치합니다.</p>
+                <pre><code>winget install --id Cloudflare.cloudflared</code></pre>
+                <p>설치가 끝나면 PowerShell을 닫았다가 다시 실행한 후 확인합니다.</p>
+                <pre><code>cloudflared --version</code></pre>
+
+                <h3>3. MemoryWeft Manager에서 Show config 확인</h3>
+                <p>MWeft 실행 경로와 도메인 설정은 임의로 작성하지 않고 MemoryWeft Manager에서 가져옵니다.</p>
+                <p>메뉴 위치:</p>
+                <pre><code>MemoryWeft Manager
+-> 설정
+-> 도메인 설정
+-> MCP 설치(AI 클라이언트)
+-> ChatGPT Desktop
+-> Show config</code></pre>
+                <p><code>Show config</code>에는 다음과 같은 JSON이 표시됩니다.</p>
+                <pre><code>{
+  "mcpServers": {
+    "mweft": {
+      "command": "D:\\...\\Mweft 설치 경로\\k2g-mcp.exe",
+      "args": [],
+      "env": {
+        "K2G_USER_MEMORY_SAVE_GROUP": "default",
+        "K2G_USER_MEMORY_SAVE_DOMAIN": "default_domain",
+        "K2G_USER_SEARCH_TARGETS": "default_domain",
+        "K2G_MCP_LAZY_INIT": "true",
+        "EMBEDDING_PROVIDER": "onnx",
+        "EMBEDDING_MODEL": "BAAI/bge-m3",
+        "EMBEDDING_ONNX_PATH":"C:\\Mweft 설치 경로\\models\\bge-m3-onnx",
+        "EMBEDDING_DIM": "1024",
+        "DATA_DIR": "D:\\AI\\프로젝트 경로"
+      }
+    }
+  }
+}</code></pre>
+                <p>이 JSON 전체를 ChatGPT에 붙여 넣는 것은 아닙니다. 다음 값만 이후 PowerShell 명령에 사용합니다.</p>
+                <ul>
+                    <li><code>command</code>: <code>k2g-mcp.exe</code> 실행 경로</li>
+                    <li><code>K2G_USER_MEMORY_SAVE_GROUP</code>: 저장 그룹</li>
+                    <li><code>K2G_USER_MEMORY_SAVE_DOMAIN</code>: 저장 도메인</li>
+                    <li><code>K2G_USER_SEARCH_TARGETS</code>: 검색 대상 도메인</li>
+                    <li>임베딩 관련 설정</li>
+                    <li><code>DATA_DIR</code>: 프로젝트 데이터 폴더</li>
+                </ul>
+                <blockquote>JSON의 <code>\\</code>는 이스케이프 표현입니다. PowerShell 경로에는 일반 역슬래시 하나만 사용합니다.</blockquote>
+                <pre><code>JSON:       D:\\AI\\MemoryWeftTest
+PowerShell: D:\AI\프로젝트 경로</code></pre>
+                <p>저장 도메인과 검색 대상은 Manager에 표시된 값을 그대로 사용해야 합니다. 예를 들어 기존 기억이 <code>Test</code> 도메인에 있다면 이를 임의로 <code>default</code>로 변경하지 않습니다.</p>
+
+                <h3>4. 환경변수 설정</h3>
+                <p>새 PowerShell 창에서 <code>Show config</code>의 값을 적용합니다.</p>
+                <pre><code>$env:K2G_DOTENV_FILE=""
+$env:K2G_USER_MEMORY_SAVE_GROUP="default"
+$env:K2G_USER_MEMORY_SAVE_DOMAIN="Test"
+$env:K2G_USER_SEARCH_TARGETS="Test"
+$env:K2G_MCP_LAZY_INIT="true"
+
+$env:EMBEDDING_PROVIDER="onnx"
+$env:EMBEDDING_MODEL="BAAI/bge-m3"
+$env:EMBEDDING_ONNX_PATH="C:\Mweft 설치 경로\models\bge-m3-onnx"
+$env:EMBEDDING_DIM="1024"
+$env:DATA_DIR="D:\AI\프로젝트 경로"</code></pre>
+                <p>위 값은 예시입니다. 특히 도메인과 경로는 자신의 <code>Show config</code> 값을 사용해야 합니다. <code>K2G_DOTENV_FILE=""</code>는 <code>.mwf</code> 파일을 사용하지 않겠다는 의미이며, <code>EMBEDDING_PROVIDER</code>와 <code>EMBEDDING_ONNX_PATH</code>는 <code>Show config</code>에 표시된 값(포터블 빌드는 <code>onnx</code>)을 그대로 사용합니다.</p>
+
+                <h3>5. MWeft 실행 파일 확인</h3>
+                <p><code>Show config</code>의 <code>command</code> 경로가 실제로 존재하는지 확인합니다.</p>
+                <pre><code>Test-Path "C:\...\Mweft 설치 경로\runtime\venv\Scripts\k2g-mcp.exe"</code></pre>
+                <p>결과가 <code>True</code>여야 합니다.</p>
+
+                <h3>6. Streamable HTTP 서버 실행</h3>
+                <p>먼저 프로젝트 폴더로 이동합니다.</p>
+                <pre><code>Set-Location "D:\AI\프로젝트 경로"</code></pre>
+                <p>다음 명령을 한 줄로 실행합니다. <code>--stdio</code> 뒤의 경로는 자신의 <code>Show config</code>에 있는 <code>command</code> 값으로 바꿉니다.</p>
+                <pre><code>npx.cmd -y supergateway --stdio '"C:\...\Mweft 설치 경로\runtime\venv\Scripts\k2g-mcp.exe"' --outputTransport streamableHttp --port 8000 --streamableHttpPath /mcp --healthEndpoint /healthz</code></pre>
+                <p>정상적으로 실행되면 다음과 비슷한 로그가 표시됩니다.</p>
+                <pre><code>[supergateway] Listening on port 8000
+[supergateway] StreamableHttp endpoint: http://localhost:8000/mcp</code></pre>
+                <p>이 PowerShell 창은 종료하지 않습니다.</p>
+
+                <h3>7. 로컬 서버 상태 확인</h3>
+                <p>새 PowerShell 창을 열고 실행합니다.</p>
+                <pre><code>Invoke-WebRequest http://localhost:8000/healthz</code></pre>
+                <p>다음과 같이 <code>200</code>과 <code>ok</code>가 나오면 정상입니다.</p>
+                <pre><code>StatusCode : 200
+Content    : ok</code></pre>
+
+                <h3>8. HTTPS 터널 생성</h3>
+                <p>새 PowerShell 창에서 실행합니다.</p>
+                <pre><code>cloudflared tunnel --url http://localhost:8000</code></pre>
+                <p>잠시 후 다음과 같은 임시 HTTPS 주소가 표시됩니다.</p>
+                <pre><code>https://random-name.trycloudflare.com</code></pre>
+                <p>ChatGPT에 등록할 최종 MCP 주소는 끝에 <code>/mcp</code>를 붙인 주소입니다.</p>
+                <pre><code>https://random-name.trycloudflare.com/mcp</code></pre>
+                <p>Cloudflared가 실행 중인 PowerShell 창도 종료하지 않습니다. 임시 터널을 다시 실행하면 주소가 바뀔 수 있습니다.</p>
+
+                <h3>9. ChatGPT에 MWeft 앱 등록</h3>
+                <p>ChatGPT에서 다음 메뉴로 이동합니다.</p>
+                <pre><code>설정
+-> 앱
+-> 고급 설정
+-> 개발자 모드 활성화
+-> 앱 만들기</code></pre>
+                <p>다음과 같이 입력합니다.</p>
+                <table>
+                    <thead><tr><th>항목</th><th>입력값</th></tr></thead>
+                    <tbody>
+                        <tr><td>이름</td><td><code>MWeft</code></td></tr>
+                        <tr><td>설명</td><td><code>개인 장기 기억을 저장하고 검색하는 MCP 시스템</code></td></tr>
+                        <tr><td>연결</td><td><code>서버 URL</code></td></tr>
+                        <tr><td>서버 URL</td><td><code>https://random-name.trycloudflare.com/mcp</code></td></tr>
+                        <tr><td>인증</td><td><code>인증 없음</code></td></tr>
+                    </tbody>
+                </table>
+                <p>주의 사항을 확인하고 동의 체크박스를 선택한 후 <code>만들기</code>를 누릅니다.</p>
+                <p>ChatGPT에는 MemoryWeft Manager의 JSON을 입력하지 않습니다. ChatGPT 앱 생성 화면에는 Cloudflare가 발급한 HTTPS 주소와 <code>/mcp</code> 경로만 입력합니다.</p>
+
+                <h3>10. 연결 테스트</h3>
+                <p>새 ChatGPT 대화에서 MWeft 앱을 활성화한 뒤 다음과 같이 요청합니다.</p>
+                <pre><code>MWeft의 mweft_search 도구를 사용해서 저장된 기억을 검색해줘.</code></pre>
+                <p>쓰기 도구가 허용되는 계정에서는 다음 요청도 시험할 수 있습니다.</p>
+                <pre><code>MWeft의 mweft_remember 도구로 이 내용을 저장해줘.</code></pre>
+
+                <h3>11. 자주 발생하는 오류</h3>
+                <h4><code>npx.ps1</code> 실행 정책 오류</h4>
+                <p>증상:</p>
+                <pre><code>PSSecurityException
+UnauthorizedAccess</code></pre>
+                <p>해결:</p>
+                <pre><code>npx.cmd --version</code></pre>
+                <p>이후 모든 Supergateway 명령에서도 <code>npx</code> 대신 <code>npx.cmd</code>를 사용합니다.</p>
+                <h4><code>cloudflared</code>를 찾을 수 없음</h4>
+                <p>해결:</p>
+                <pre><code>winget install --id Cloudflare.cloudflared</code></pre>
+                <p>설치 후 PowerShell을 다시 열고 확인합니다.</p>
+                <pre><code>cloudflared --version</code></pre>
+                <h4>ChatGPT에서 앱을 만들 수 없음</h4>
+                <p>다음을 확인합니다.</p>
+                <ul>
+                    <li>Supergateway PowerShell 창이 실행 중인가?</li>
+                    <li><code>http://localhost:8000/healthz</code>가 <code>200 OK</code>를 반환하는가?</li>
+                    <li>Cloudflared PowerShell 창이 실행 중인가?</li>
+                    <li>ChatGPT URL 끝에 <code>/mcp</code>가 포함되어 있는가?</li>
+                    <li>Cloudflare 임시 주소가 재실행으로 변경되지 않았는가?</li>
+                    <li>인증 설정이 <code>OAuth</code>가 아니라 <code>인증 없음</code>인가?</li>
+                    <li><code>K2G_DOTENV_FILE</code>가 <code>""</code>(빈 문자열)로 설정되어 있는가? (<code>.mwf config file not found</code> 방지)</li>
+                </ul>
+
+                <h3>12. 종료 방법</h3>
+                <p>테스트를 마치면 다음 두 PowerShell 창에서 각각 <code>Ctrl+C</code>를 누릅니다.</p>
+                <ol>
+                    <li>Cloudflared 실행 창</li>
+                    <li>Supergateway 실행 창</li>
+                </ol>
+                <p>두 프로세스를 종료하면 외부에서 MWeft에 접속할 수 없습니다.</p>
+
+                <h3>13. 보안 주의</h3>
+                <p><code>trycloudflare.com</code> 임시 터널과 <code>인증 없음</code>의 조합은 짧은 연결 시험에 적합합니다. URL을 아는 외부 사용자가 MWeft의 기억을 조회하거나 쓰기 도구를 실행할 위험이 있으므로 주소를 공유해서는 안 됩니다.</p>
+                <p>지속적으로 운영하려면 다음 구성을 권장합니다.</p>
+                <ul>
+                    <li>고정 Cloudflare Tunnel</li>
+                    <li>Cloudflare Access 등의 접근 제어</li>
+                    <li>OAuth 또는 별도의 인증 계층</li>
+                    <li>읽기 도구와 쓰기 도구의 권한 분리</li>
+                    <li>개인 기억이 아닌 별도 테스트 도메인에서 최초 검증</li>
+                </ul>
+            </div>
         </article>
 
     </div>
@@ -252,6 +533,34 @@
             }
 
             input.addEventListener('input', filter);
+        })();
+
+        // 클릭하면 펼쳐지는 상세: detail 블록이 있는 항목만 토글 가능하게 구성
+        (function () {
+            var CHEVRON =
+                '<svg class="row-toggle" viewBox="0 0 24 24" stroke-width="2" ' +
+                'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+                '<polyline points="6 9 12 15 18 9"></polyline></svg>';
+
+            document.querySelectorAll('#ts-board .row').forEach(function (row) {
+                if (!row.querySelector('.detail')) return; // detail 없으면 일반 항목
+
+                row.classList.add('has-detail');
+                row.insertAdjacentHTML('beforeend', CHEVRON);
+                row.setAttribute('role', 'button');
+                row.setAttribute('tabindex', '0');
+                row.setAttribute('aria-expanded', 'false');
+
+                function toggle() {
+                    var open = row.classList.toggle('open');
+                    row.setAttribute('aria-expanded', open ? 'true' : 'false');
+                }
+
+                row.addEventListener('click', toggle);
+                row.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+                });
+            });
         })();
 
         // iframe 자동 높이: 부모 창에 콘텐츠 높이를 전달 (내부 스크롤바 방지)

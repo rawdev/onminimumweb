@@ -83,6 +83,11 @@
             font-size: 14px; color: #4a4a44; line-height: 1.8;
         }
 
+        .content a {
+            color: #b9791f; text-decoration: underline;
+            text-underline-offset: 2px; word-break: break-all;
+        }
+
         .empty {
             padding: 48px 20px; text-align: center;
             color: var(--muted); font-size: 14px;
@@ -146,6 +151,8 @@
             font-size: 14.5px; line-height: 1.95; color: #484840;
         }
 
+        body.theme-onmin .content a { color: var(--accent); }
+
         body.theme-onmin .empty { color: #88887E; }
     </style>
 </head>
@@ -158,6 +165,21 @@
           항상 최신 공지가 맨 위에 오도록 합니다.
     -->
     <div class="board">
+
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">안내</span>
+                <span class="date">2026.06.07</span>
+            </div>
+            <h2 class="subject">MemoryWeft, GitHub 정식 오픈소스 공개 (Apache 2.0)</h2>
+            <p class="content">
+                MemoryWeft를 GitHub에 정식 오픈소스로 공개했습니다.
+                라이선스는 Apache License 2.0이며, 아래 경로에서 소스 코드와
+                설치 가능한 릴리스를 확인하실 수 있습니다.<br><br>
+                · 오픈소스 경로: <a href="https://github.com/rawdev/MemoryWeft" target="_blank" rel="noopener">https://github.com/rawdev/MemoryWeft</a><br>
+                · 릴리스(설치) 경로: <a href="https://github.com/rawdev/MemoryWeft/releases" target="_blank" rel="noopener">https://github.com/rawdev/MemoryWeft/releases</a>
+            </p>
+        </article>
 
         <article class="row">
             <div class="row-head">

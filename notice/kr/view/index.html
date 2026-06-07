@@ -103,14 +103,60 @@
             font-size: 14px; letter-spacing: 0.05em;
         }
 
-        /* NOTICE EMBED (iframe → /notice/kr/) */
-        .notice-wrap {
-            max-width: 880px;
+        /* NOTICE LAYOUT — 왼쪽 탭 + 오른쪽 공지 본문 */
+        .notice-layout {
+            max-width: 1080px;
             margin: 0 auto;
             padding: 40px 52px 140px;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 48px;
+            align-items: start;
         }
 
-        #notice-frame {
+        /* LEFT TABS */
+        .notice-tabs {
+            position: sticky;
+            top: 110px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            list-style: none;
+        }
+
+        .notice-tab {
+            appearance: none;
+            background: none;
+            border: 0;
+            border-left: 2px solid var(--border);
+            text-align: left;
+            padding: 12px 18px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 0.03em;
+            line-height: 1.5;
+            transition: color 0.2s, border-color 0.2s, background 0.2s;
+        }
+
+        .notice-tab:hover { color: var(--text); }
+
+        .notice-tab.active {
+            color: var(--text);
+            font-weight: 500;
+            border-left-color: var(--accent);
+            background: rgba(196, 136, 42, 0.04);
+        }
+
+        /* RIGHT CONTENT (iframe panels) */
+        .notice-content { min-width: 0; }
+
+        .notice-panel { display: none; }
+        .notice-panel.active { display: block; }
+
+        .notice-frame {
             display: block;
             width: 100%;
             border: 0;
@@ -145,7 +191,28 @@
             nav { padding: 20px 28px; }
             .nav-links { gap: 22px; }
             .page-head { padding: 150px 28px 40px; }
-            .notice-wrap { padding: 30px 28px 100px; }
+            .notice-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 30px 28px 100px;
+            }
+            .notice-tabs {
+                position: static;
+                flex-direction: row;
+                gap: 8px;
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 4px;
+            }
+            .notice-tab {
+                border-left: 0;
+                border-bottom: 2px solid transparent;
+                padding: 10px 14px;
+            }
+            .notice-tab.active {
+                border-left: 0;
+                border-bottom-color: var(--accent);
+                background: none;
+            }
             footer { flex-direction: column; gap: 14px; text-align: center; padding: 36px 28px; }
         }
     </style>
@@ -177,13 +244,38 @@
         <p class="page-sub">온MINIMUM의 소식과 안내를 전합니다.</p>
     </header>
 
-    <!-- NOTICE LIST (외부 공유용 원본 /notice/kr/ 을 iframe으로 임베드) -->
-    <main class="notice-wrap">
-        <iframe id="notice-frame"
-                src="/notice/kr/?theme=onmin"
-                title="온MINIMUM 공지사항"
-                scrolling="no"
-                loading="lazy"></iframe>
+    <!-- NOTICE LAYOUT: 왼쪽 탭으로 채널을 전환, 오른쪽에 외부 공유용 원본을 iframe으로 임베드 -->
+    <main class="notice-layout">
+        <!-- LEFT TABS -->
+        <ul class="notice-tabs" role="tablist" aria-label="공지 채널">
+            <li>
+                <button class="notice-tab active" type="button"
+                        role="tab" aria-selected="true"
+                        data-target="panel-onmin">온MINIMUM 공지사항</button>
+            </li>
+            <li>
+                <button class="notice-tab" type="button"
+                        role="tab" aria-selected="false"
+                        data-target="panel-memoryweft">MemoryWeft 공지사항</button>
+            </li>
+        </ul>
+
+        <!-- RIGHT CONTENT -->
+        <div class="notice-content">
+            <section class="notice-panel active" id="panel-onmin" role="tabpanel">
+                <iframe class="notice-frame" data-channel="onmin"
+                        src="/notice/kr/?theme=onmin"
+                        title="온MINIMUM 공지사항"
+                        scrolling="no"></iframe>
+            </section>
+            <section class="notice-panel" id="panel-memoryweft" role="tabpanel">
+                <iframe class="notice-frame" data-channel="memoryweft"
+                        src="/notice/mw/kr/?theme=onmin"
+                        title="MemoryWeft 공지사항"
+                        scrolling="no"
+                        loading="lazy"></iframe>
+            </section>
+        </div>
     </main>
 
     <!-- FOOTER -->
@@ -201,14 +293,43 @@
     </footer>
 
     <script>
-        // 임베드한 공지 iframe 의 높이를 콘텐츠에 맞춰 자동 조정 → 내부 스크롤바 제거
+        // 채널별 iframe 의 높이를 콘텐츠에 맞춰 자동 조정 → 내부 스크롤바 제거
         (function () {
-            var frame = document.getElementById('notice-frame');
+            var frames = {};
+            document.querySelectorAll('.notice-frame').forEach(function (f) {
+                frames[f.getAttribute('data-channel')] = f;
+            });
+
             window.addEventListener('message', function (e) {
                 var data = e.data;
-                if (data && data.type === 'onmin-notice-height' && data.height) {
-                    frame.style.height = data.height + 'px';
+                if (!data || data.type !== 'onmin-notice-height' || !data.height) return;
+                // 메시지의 channel 로 대상 iframe 을 찾고, 없으면 e.source 로 매칭
+                var frame = frames[data.channel];
+                if (!frame) {
+                    for (var key in frames) {
+                        if (frames[key].contentWindow === e.source) { frame = frames[key]; break; }
+                    }
                 }
+                if (frame) frame.style.height = data.height + 'px';
+            });
+        })();
+
+        // 왼쪽 탭 전환
+        (function () {
+            var tabs = document.querySelectorAll('.notice-tab');
+            tabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    tabs.forEach(function (t) {
+                        t.classList.remove('active');
+                        t.setAttribute('aria-selected', 'false');
+                    });
+                    document.querySelectorAll('.notice-panel').forEach(function (p) {
+                        p.classList.remove('active');
+                    });
+                    tab.classList.add('active');
+                    tab.setAttribute('aria-selected', 'true');
+                    document.getElementById(tab.getAttribute('data-target')).classList.add('active');
+                });
             });
         })();
     </script>

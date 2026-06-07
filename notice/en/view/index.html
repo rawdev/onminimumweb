@@ -103,14 +103,60 @@
             font-size: 14px; letter-spacing: 0.05em;
         }
 
-        /* NOTICE EMBED (iframe → /notice/en/) */
-        .notice-wrap {
-            max-width: 880px;
+        /* NOTICE LAYOUT — left tabs + notice body on the right */
+        .notice-layout {
+            max-width: 1080px;
             margin: 0 auto;
             padding: 40px 52px 140px;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 48px;
+            align-items: start;
         }
 
-        #notice-frame {
+        /* LEFT TABS */
+        .notice-tabs {
+            position: sticky;
+            top: 110px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            list-style: none;
+        }
+
+        .notice-tab {
+            appearance: none;
+            background: none;
+            border: 0;
+            border-left: 2px solid var(--border);
+            text-align: left;
+            padding: 12px 18px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 0.03em;
+            line-height: 1.5;
+            transition: color 0.2s, border-color 0.2s, background 0.2s;
+        }
+
+        .notice-tab:hover { color: var(--text); }
+
+        .notice-tab.active {
+            color: var(--text);
+            font-weight: 500;
+            border-left-color: var(--accent);
+            background: rgba(196, 136, 42, 0.04);
+        }
+
+        /* RIGHT CONTENT (iframe panels) */
+        .notice-content { min-width: 0; }
+
+        .notice-panel { display: none; }
+        .notice-panel.active { display: block; }
+
+        .notice-frame {
             display: block;
             width: 100%;
             border: 0;
@@ -145,7 +191,28 @@
             nav { padding: 20px 28px; }
             .nav-links { gap: 22px; }
             .page-head { padding: 150px 28px 40px; }
-            .notice-wrap { padding: 30px 28px 100px; }
+            .notice-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 30px 28px 100px;
+            }
+            .notice-tabs {
+                position: static;
+                flex-direction: row;
+                gap: 8px;
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 4px;
+            }
+            .notice-tab {
+                border-left: 0;
+                border-bottom: 2px solid transparent;
+                padding: 10px 14px;
+            }
+            .notice-tab.active {
+                border-left: 0;
+                border-bottom-color: var(--accent);
+                background: none;
+            }
             footer { flex-direction: column; gap: 14px; text-align: center; padding: 36px 28px; }
         }
     </style>
@@ -177,13 +244,38 @@
         <p class="page-sub">News and announcements from onMINIMUM.</p>
     </header>
 
-    <!-- NOTICE LIST (embeds the shareable source /notice/en/ via iframe) -->
-    <main class="notice-wrap">
-        <iframe id="notice-frame"
-                src="/notice/en/?theme=onmin"
-                title="onMINIMUM notices"
-                scrolling="no"
-                loading="lazy"></iframe>
+    <!-- NOTICE LAYOUT: left tabs switch the channel, the shareable source is embedded via iframe -->
+    <main class="notice-layout">
+        <!-- LEFT TABS -->
+        <ul class="notice-tabs" role="tablist" aria-label="Notice channels">
+            <li>
+                <button class="notice-tab active" type="button"
+                        role="tab" aria-selected="true"
+                        data-target="panel-onmin">onMINIMUM Notice</button>
+            </li>
+            <li>
+                <button class="notice-tab" type="button"
+                        role="tab" aria-selected="false"
+                        data-target="panel-memoryweft">MemoryWeft Notice</button>
+            </li>
+        </ul>
+
+        <!-- RIGHT CONTENT -->
+        <div class="notice-content">
+            <section class="notice-panel active" id="panel-onmin" role="tabpanel">
+                <iframe class="notice-frame" data-channel="onmin"
+                        src="/notice/en/?theme=onmin"
+                        title="onMINIMUM notices"
+                        scrolling="no"></iframe>
+            </section>
+            <section class="notice-panel" id="panel-memoryweft" role="tabpanel">
+                <iframe class="notice-frame" data-channel="memoryweft"
+                        src="/notice/mw/en/?theme=onmin"
+                        title="MemoryWeft notices"
+                        scrolling="no"
+                        loading="lazy"></iframe>
+            </section>
+        </div>
     </main>
 
     <!-- FOOTER -->
@@ -201,14 +293,43 @@
     </footer>
 
     <script>
-        // Auto-fit the embedded notice iframe to its content height → no inner scrollbar
+        // Auto-fit each channel's iframe to its content height → no inner scrollbar
         (function () {
-            var frame = document.getElementById('notice-frame');
+            var frames = {};
+            document.querySelectorAll('.notice-frame').forEach(function (f) {
+                frames[f.getAttribute('data-channel')] = f;
+            });
+
             window.addEventListener('message', function (e) {
                 var data = e.data;
-                if (data && data.type === 'onmin-notice-height' && data.height) {
-                    frame.style.height = data.height + 'px';
+                if (!data || data.type !== 'onmin-notice-height' || !data.height) return;
+                // Find the target iframe by channel, falling back to e.source matching
+                var frame = frames[data.channel];
+                if (!frame) {
+                    for (var key in frames) {
+                        if (frames[key].contentWindow === e.source) { frame = frames[key]; break; }
+                    }
                 }
+                if (frame) frame.style.height = data.height + 'px';
+            });
+        })();
+
+        // Left tab switching
+        (function () {
+            var tabs = document.querySelectorAll('.notice-tab');
+            tabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    tabs.forEach(function (t) {
+                        t.classList.remove('active');
+                        t.setAttribute('aria-selected', 'false');
+                    });
+                    document.querySelectorAll('.notice-panel').forEach(function (p) {
+                        p.classList.remove('active');
+                    });
+                    tab.classList.add('active');
+                    tab.setAttribute('aria-selected', 'true');
+                    document.getElementById(tab.getAttribute('data-target')).classList.add('active');
+                });
             });
         })();
     </script>

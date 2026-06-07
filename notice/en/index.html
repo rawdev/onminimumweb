@@ -191,7 +191,7 @@
             function postHeight() {
                 var h = Math.ceil(document.body.getBoundingClientRect().height);
                 window.parent.postMessage(
-                    { type: 'onmin-notice-height', height: h }, '*'
+                    { type: 'onmin-notice-height', channel: 'onmin', height: h }, '*'
                 );
             }
 

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>공지사항 — 온MINIMUM</title>
-    <meta name="description" content="온MINIMUM 공지사항">
+    <title>MemoryWeft 공지사항 — 온MINIMUM</title>
+    <meta name="description" content="MemoryWeft 공지사항">
     <!-- 폰트는 onmin 테마(사이트 내 임베드)에서만 의미가 있으나, 미리 연결해 둡니다. -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +14,7 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         /* =========================================================
-           이 페이지는 외부에서 iframe으로 끌어다 쓰는 "공지 원본"입니다.
+           이 페이지는 외부에서 iframe으로 끌어다 쓰는 MemoryWeft "공지 원본"입니다.
            - 기본(plain) 테마: 특색 없는 중립적인 리스트 박스
            - ?theme=onmin    : 온MINIMUM 사이트 디자인에 맞춘 테마
            최신 공지가 항상 맨 위에 오도록 작성합니다.
@@ -162,14 +162,13 @@
         <article class="row">
             <div class="row-head">
                 <span class="tag">안내</span>
-                <span class="date">2026.06.03</span>
+                <span class="date">2026.06.07</span>
             </div>
-            <h2 class="subject">온MINIMUM 공식 웹사이트 오픈</h2>
+            <h2 class="subject">MemoryWeft 공지사항 채널 개설</h2>
             <p class="content">
-                온MINIMUM의 공식 웹사이트가 문을 열었습니다.
-                "온전한 최소"라는 철학 아래, 불필요한 것을 걷어내고
-                본질에 집중하는 AI 솔루션을 선보입니다.
-                앞으로 이 공지사항을 통해 서비스 소식과 안내를 전해드리겠습니다.
+                MemoryWeft의 소식을 전하는 공지사항 채널이 새로 개설되었습니다.
+                앞으로 MemoryWeft 관련 업데이트와 안내 사항을
+                이 채널을 통해 안내해 드리겠습니다.
             </p>
         </article>
 
@@ -191,7 +190,7 @@
             function postHeight() {
                 var h = Math.ceil(document.body.getBoundingClientRect().height);
                 window.parent.postMessage(
-                    { type: 'onmin-notice-height', channel: 'onmin', height: h }, '*'
+                    { type: 'onmin-notice-height', channel: 'memoryweft', height: h }, '*'
                 );
             }
 

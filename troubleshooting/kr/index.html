@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemoryWeft 트러블슈팅 — 온MINIMUM</title>
+    <meta name="description" content="MemoryWeft 트러블슈팅">
+    <!-- 폰트는 onmin 테마(사이트 내 임베드)에서만 의미가 있으나, 미리 연결해 둡니다. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;500&family=Inter:ital,wght@0,200;0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* =========================================================
+           이 페이지는 외부에서 iframe으로 끌어다 쓰는 MemoryWeft
+           "트러블슈팅 원본"입니다. (날짜 없음 + 단어 검색)
+           - 기본(plain) 테마: 특색 없는 중립적인 리스트 박스
+           - ?theme=onmin    : 온MINIMUM 사이트 디자인에 맞춘 테마
+           ========================================================= */
+
+        :root {
+            --line:   #dcdcd6;
+            --txt:    #1c1c1a;
+            --muted:  #8a8a82;
+            --tag:    #5a5a52;
+            --hover:  rgba(0, 0, 0, 0.015);
+            --accent: #C4882A;
+        }
+
+        html, body { background: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         "Noto Sans KR", Roboto, "Helvetica Neue", sans-serif;
+            color: var(--txt);
+            line-height: 1.65;
+            font-size: 15px;
+            -webkit-font-smoothing: antialiased;
+            padding: 16px;
+        }
+
+        /* SEARCH */
+        .ts-search {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .ts-search input {
+            width: 100%;
+            font: inherit;
+            font-size: 14px;
+            color: var(--txt);
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 11px 14px 11px 38px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .ts-search input:focus { border-color: var(--accent); }
+        .ts-search input::placeholder { color: var(--muted); }
+
+        .ts-search svg {
+            position: absolute;
+            left: 13px; top: 50%;
+            transform: translateY(-50%);
+            width: 15px; height: 15px;
+            stroke: var(--muted);
+            pointer-events: none;
+        }
+
+        .board {
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .row {
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--line);
+            transition: background 0.2s;
+        }
+
+        .row:last-child { border-bottom: none; }
+        .row:hover { background: var(--hover); }
+        .row[hidden] { display: none; }
+
+        .row-head {
+            display: flex; align-items: center; gap: 10px;
+            flex-wrap: wrap; margin-bottom: 8px;
+        }
+
+        .tag {
+            font-size: 11px; letter-spacing: 0.04em;
+            color: var(--tag);
+            border: 1px solid var(--line);
+            border-radius: 2px;
+            padding: 1px 8px;
+        }
+
+        .subject {
+            font-size: 16px; font-weight: 600;
+            line-height: 1.4; margin-bottom: 6px;
+        }
+
+        .content {
+            font-size: 14px; color: #4a4a44; line-height: 1.8;
+        }
+
+        .empty {
+            padding: 48px 20px; text-align: center;
+            color: var(--muted); font-size: 14px;
+        }
+        .empty[hidden] { display: none; }
+
+        /* =========================================================
+           ONMIN 테마 — 온MINIMUM 사이트(iframe 부모)와 어울리는 스타일
+           body.theme-onmin 일 때만 적용
+           ========================================================= */
+        body.theme-onmin {
+            --border: #E0DFD6;
+            background: transparent;
+            color: #0F0F0D;
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.7;
+            padding: 0;
+        }
+
+        body.theme-onmin .ts-search { margin-bottom: 8px; }
+
+        body.theme-onmin .ts-search input {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 14px 16px 14px 42px;
+            font-size: 14px;
+            letter-spacing: 0.02em;
+        }
+
+        body.theme-onmin .board {
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            overflow: visible;
+        }
+
+        body.theme-onmin .row {
+            border-bottom: none;
+            border-top: 1px solid var(--border);
+            padding: 36px 4px;
+            transition: background 0.3s;
+        }
+
+        body.theme-onmin .row:last-child { border-bottom: 1px solid var(--border); }
+        body.theme-onmin .row:hover { background: rgba(196, 136, 42, 0.03); }
+
+        body.theme-onmin .row-head {
+            gap: 16px; margin-bottom: 14px;
+        }
+
+        body.theme-onmin .tag {
+            font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+            color: var(--accent); font-family: 'Inter', sans-serif;
+            border: 1px solid var(--accent);
+            border-radius: 2px; padding: 3px 10px;
+        }
+
+        body.theme-onmin .subject {
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 400; font-size: 20px;
+            line-height: 1.45; margin-bottom: 14px;
+        }
+
+        body.theme-onmin .content {
+            font-size: 14.5px; line-height: 1.95; color: #484840;
+        }
+
+        body.theme-onmin .empty { color: #88887E; }
+    </style>
+</head>
+<body>
+
+    <!-- SEARCH -->
+    <div class="ts-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="search" id="ts-search-input"
+               placeholder="검색어를 입력하세요 (예: MCP, 설치)"
+               autocomplete="off" aria-label="트러블슈팅 검색">
+    </div>
+
+    <!--
+        ▸ 새 항목 추가 방법:
+          아래 <article class="row"> 블록을 복사해 board 맨 위에 붙여넣고
+          분류(tag) · 제목(subject) · 내용(content)만 바꾸면 됩니다.
+    -->
+    <div class="board" id="ts-board">
+
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">MCP</span>
+            </div>
+            <h2 class="subject">Claude Desktop에서 MCP 기능이 확인되지 않을 때</h2>
+            <p class="content">
+                클로드 데스크탑에 MCP 설치 시, 기능 확인이 어렵다면
+                채팅 창에 'Mweft MCP 도구 확인해줘' 라고 입력하세요.
+            </p>
+        </article>
+
+    </div>
+
+    <div class="empty" id="ts-empty" hidden>검색 결과가 없습니다.</div>
+
+    <script>
+        // 테마 적용: ?theme=onmin 이면 온MINIMUM 사이트 디자인으로 렌더링
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('theme') === 'onmin') {
+                document.body.classList.add('theme-onmin');
+            }
+        })();
+
+        // 단어 검색: 제목·내용·분류 텍스트에서 입력어를 포함하는 항목만 표시
+        (function () {
+            var input = document.getElementById('ts-search-input');
+            var rows  = Array.prototype.slice.call(document.querySelectorAll('#ts-board .row'));
+            var empty = document.getElementById('ts-empty');
+
+            function normalize(s) { return (s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+
+            // 각 항목의 검색 대상 텍스트를 미리 계산
+            rows.forEach(function (row) {
+                row._text = normalize(row.textContent);
+            });
+
+            function filter() {
+                var q = normalize(input.value);
+                var visible = 0;
+                rows.forEach(function (row) {
+                    var match = (q === '' || row._text.indexOf(q) !== -1);
+                    row.hidden = !match;
+                    if (match) visible++;
+                });
+                empty.hidden = (visible !== 0);
+            }
+
+            input.addEventListener('input', filter);
+        })();
+
+        // iframe 자동 높이: 부모 창에 콘텐츠 높이를 전달 (내부 스크롤바 방지)
+        (function () {
+            if (window.parent === window) return; // 단독 페이지면 동작 안 함
+
+            function postHeight() {
+                var h = Math.ceil(document.body.getBoundingClientRect().height);
+                window.parent.postMessage(
+                    { type: 'onmin-notice-height', channel: 'troubleshooting', height: h }, '*'
+                );
+            }
+
+            window.addEventListener('load', postHeight);
+            window.addEventListener('resize', postHeight);
+            document.addEventListener('input', postHeight);
+
+            if (window.ResizeObserver) {
+                new ResizeObserver(postHeight).observe(document.body);
+            } else {
+                setTimeout(postHeight, 400);
+            }
+        })();
+    </script>
+
+</body>
+</html>

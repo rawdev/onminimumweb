@@ -296,6 +296,205 @@
             </div>
         </article>
 
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">ChatGPT</span>
+            </div>
+            <h2 class="subject">When you want to use MWeft MCP with ChatGPT</h2>
+            <p class="content">
+                Installing MCP for ChatGPT is not officially supported yet.
+                However, you can try the following method to set it up.
+            </p>
+            <div class="detail">
+                <p>This document explains how to connect a local MemoryWeft (MWeft) MCP server running on a Windows PC to ChatGPT as a custom app.</p>
+
+                <h3>1. Connection architecture</h3>
+                <p>The MCP server provided by MemoryWeft Manager is, by default, a local <code>stdio</code> server. ChatGPT cannot connect to that process directly, so it must be converted into an HTTPS MCP endpoint as follows.</p>
+                <pre><code>MWeft stdio MCP
+  -> Supergateway (Streamable HTTP)
+  -> Cloudflare Tunnel (public HTTPS)
+  -> ChatGPT custom MCP app</code></pre>
+
+                <h3>2. Prerequisites</h3>
+                <ul>
+                    <li>Windows PowerShell</li>
+                    <li>MemoryWeft Manager and a created project</li>
+                    <li>Node.js</li>
+                    <li>Cloudflared</li>
+                    <li>A ChatGPT account that can create custom MCP apps</li>
+                </ul>
+                <p>Check whether they are installed.</p>
+                <pre><code>node --version
+npx.cmd --version
+cloudflared --version</code></pre>
+                <p>The PowerShell execution policy may block <code>npx</code>. This document always uses <code>npx.cmd</code> instead of <code>npx</code>.</p>
+                <p>If Cloudflared is not installed, install it with the following command.</p>
+                <pre><code>winget install --id Cloudflare.cloudflared</code></pre>
+                <p>After installation, close and reopen PowerShell, then verify.</p>
+                <pre><code>cloudflared --version</code></pre>
+
+                <h3>3. Get the values from MemoryWeft Manager "Show config"</h3>
+                <p>Do not write the MWeft executable path and domain settings by hand — take them from MemoryWeft Manager.</p>
+                <p>Menu location:</p>
+                <pre><code>MemoryWeft Manager
+-> Settings
+-> Domain settings
+-> MCP install (AI client)
+-> ChatGPT Desktop
+-> Show config</code></pre>
+                <p><code>Show config</code> displays JSON like the following.</p>
+                <pre><code>{
+  "mcpServers": {
+    "mweft": {
+      "command": "D:\\...\\Mweft-install-path\\k2g-mcp.exe",
+      "args": [],
+      "env": {
+        "K2G_USER_MEMORY_SAVE_GROUP": "default",
+        "K2G_USER_MEMORY_SAVE_DOMAIN": "default_domain",
+        "K2G_USER_SEARCH_TARGETS": "default_domain",
+        "K2G_MCP_LAZY_INIT": "true",
+        "EMBEDDING_PROVIDER": "onnx",
+        "EMBEDDING_MODEL": "BAAI/bge-m3",
+        "EMBEDDING_ONNX_PATH":"C:\\Mweft-install-path\\models\\bge-m3-onnx",
+        "EMBEDDING_DIM": "1024",
+        "DATA_DIR": "D:\\AI\\project-path"
+      }
+    }
+  }
+}</code></pre>
+                <p>You do not paste this entire JSON into ChatGPT. Only the following values are used in the later PowerShell commands.</p>
+                <ul>
+                    <li><code>command</code>: path to <code>k2g-mcp.exe</code></li>
+                    <li><code>K2G_USER_MEMORY_SAVE_GROUP</code>: save group</li>
+                    <li><code>K2G_USER_MEMORY_SAVE_DOMAIN</code>: save domain</li>
+                    <li><code>K2G_USER_SEARCH_TARGETS</code>: search target domain</li>
+                    <li>embedding settings</li>
+                    <li><code>DATA_DIR</code>: project data folder</li>
+                </ul>
+                <blockquote>The <code>\\</code> in JSON is an escaped representation. In PowerShell paths, use a single backslash.</blockquote>
+                <pre><code>JSON:       D:\\AI\\MemoryWeftTest
+PowerShell: D:\AI\project-path</code></pre>
+                <p>Use the save domain and search target exactly as shown in Manager. For example, if your existing memories are in the <code>Test</code> domain, do not change it to <code>default</code> arbitrarily.</p>
+
+                <h3>4. Set environment variables</h3>
+                <p>In a new PowerShell window, apply the values from <code>Show config</code>.</p>
+                <pre><code>$env:K2G_DOTENV_FILE=""
+$env:K2G_USER_MEMORY_SAVE_GROUP="default"
+$env:K2G_USER_MEMORY_SAVE_DOMAIN="Test"
+$env:K2G_USER_SEARCH_TARGETS="Test"
+$env:K2G_MCP_LAZY_INIT="true"
+
+$env:EMBEDDING_PROVIDER="onnx"
+$env:EMBEDDING_MODEL="BAAI/bge-m3"
+$env:EMBEDDING_ONNX_PATH="C:\Mweft-install-path\models\bge-m3-onnx"
+$env:EMBEDDING_DIM="1024"
+$env:DATA_DIR="D:\AI\project-path"</code></pre>
+                <p>The values above are examples. In particular, the domain and paths must use your own <code>Show config</code> values. <code>K2G_DOTENV_FILE=""</code> means "do not use a <code>.mwf</code> file", and <code>EMBEDDING_PROVIDER</code> / <code>EMBEDDING_ONNX_PATH</code> should be used exactly as shown in <code>Show config</code> (the portable build uses <code>onnx</code>).</p>
+
+                <h3>5. Verify the MWeft executable</h3>
+                <p>Check that the <code>command</code> path from <code>Show config</code> actually exists.</p>
+                <pre><code>Test-Path "C:\...\Mweft-install-path\runtime\venv\Scripts\k2g-mcp.exe"</code></pre>
+                <p>The result must be <code>True</code>.</p>
+
+                <h3>6. Run the Streamable HTTP server</h3>
+                <p>First, move into the project folder.</p>
+                <pre><code>Set-Location "D:\AI\project-path"</code></pre>
+                <p>Run the following as a single line. Replace the path after <code>--stdio</code> with the <code>command</code> value from your <code>Show config</code>.</p>
+                <pre><code>npx.cmd -y supergateway --stdio '"C:\...\Mweft-install-path\runtime\venv\Scripts\k2g-mcp.exe"' --outputTransport streamableHttp --port 8000 --streamableHttpPath /mcp --healthEndpoint /healthz</code></pre>
+                <p>When it starts correctly, you will see logs similar to the following.</p>
+                <pre><code>[supergateway] Listening on port 8000
+[supergateway] StreamableHttp endpoint: http://localhost:8000/mcp</code></pre>
+                <p>Do not close this PowerShell window.</p>
+
+                <h3>7. Check the local server status</h3>
+                <p>Open a new PowerShell window and run:</p>
+                <pre><code>Invoke-WebRequest http://localhost:8000/healthz</code></pre>
+                <p>It is working if you see <code>200</code> and <code>ok</code> as below.</p>
+                <pre><code>StatusCode : 200
+Content    : ok</code></pre>
+
+                <h3>8. Create the HTTPS tunnel</h3>
+                <p>In a new PowerShell window, run:</p>
+                <pre><code>cloudflared tunnel --url http://localhost:8000</code></pre>
+                <p>After a moment, a temporary HTTPS address like the following appears.</p>
+                <pre><code>https://random-name.trycloudflare.com</code></pre>
+                <p>The final MCP address to register in ChatGPT is that address with <code>/mcp</code> appended.</p>
+                <pre><code>https://random-name.trycloudflare.com/mcp</code></pre>
+                <p>Do not close the PowerShell window running Cloudflared either. Restarting the temporary tunnel may change the address.</p>
+
+                <h3>9. Register the MWeft app in ChatGPT</h3>
+                <p>In ChatGPT, go to the following menu.</p>
+                <pre><code>Settings
+-> Apps
+-> Advanced settings
+-> Enable developer mode
+-> Create app</code></pre>
+                <p>Enter the following.</p>
+                <table>
+                    <thead><tr><th>Field</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>Name</td><td><code>MWeft</code></td></tr>
+                        <tr><td>Description</td><td><code>An MCP system that stores and searches personal long-term memory</code></td></tr>
+                        <tr><td>Connection</td><td><code>Server URL</code></td></tr>
+                        <tr><td>Server URL</td><td><code>https://random-name.trycloudflare.com/mcp</code></td></tr>
+                        <tr><td>Authentication</td><td><code>No authentication</code></td></tr>
+                    </tbody>
+                </table>
+                <p>Review the warnings, check the consent box, then click <code>Create</code>.</p>
+                <p>You do not enter the MemoryWeft Manager JSON into ChatGPT. On the ChatGPT app creation screen, enter only the HTTPS address issued by Cloudflare with the <code>/mcp</code> path.</p>
+
+                <h3>10. Test the connection</h3>
+                <p>In a new ChatGPT conversation, enable the MWeft app and make a request like:</p>
+                <pre><code>Use MWeft's mweft_search tool to search my saved memories.</code></pre>
+                <p>On accounts where write tools are allowed, you can also try:</p>
+                <pre><code>Use MWeft's mweft_remember tool to save this content.</code></pre>
+
+                <h3>11. Common errors</h3>
+                <h4><code>npx.ps1</code> execution policy error</h4>
+                <p>Symptom:</p>
+                <pre><code>PSSecurityException
+UnauthorizedAccess</code></pre>
+                <p>Fix:</p>
+                <pre><code>npx.cmd --version</code></pre>
+                <p>After this, use <code>npx.cmd</code> instead of <code>npx</code> in all Supergateway commands too.</p>
+                <h4><code>cloudflared</code> not found</h4>
+                <p>Fix:</p>
+                <pre><code>winget install --id Cloudflare.cloudflared</code></pre>
+                <p>After installing, reopen PowerShell and verify.</p>
+                <pre><code>cloudflared --version</code></pre>
+                <h4>Cannot create the app in ChatGPT</h4>
+                <p>Check the following.</p>
+                <ul>
+                    <li>Is the Supergateway PowerShell window still running?</li>
+                    <li>Does <code>http://localhost:8000/healthz</code> return <code>200 OK</code>?</li>
+                    <li>Is the Cloudflared PowerShell window still running?</li>
+                    <li>Does the ChatGPT URL end with <code>/mcp</code>?</li>
+                    <li>Has the Cloudflare temporary address changed due to a restart?</li>
+                    <li>Is authentication set to <code>No authentication</code>, not <code>OAuth</code>?</li>
+                    <li>Is <code>K2G_DOTENV_FILE</code> set to <code>""</code> (empty string)? (prevents <code>.mwf config file not found</code>)</li>
+                </ul>
+
+                <h3>12. How to shut down</h3>
+                <p>When testing is done, press <code>Ctrl+C</code> in each of the two PowerShell windows.</p>
+                <ol>
+                    <li>The Cloudflared window</li>
+                    <li>The Supergateway window</li>
+                </ol>
+                <p>Once both processes stop, MWeft can no longer be reached from outside.</p>
+
+                <h3>13. Security note</h3>
+                <p>The combination of a <code>trycloudflare.com</code> temporary tunnel and <code>No authentication</code> is suitable only for short connection tests. Anyone who knows the URL can read MWeft's memories or run write tools, so the address must not be shared.</p>
+                <p>For continuous operation, the following setup is recommended.</p>
+                <ul>
+                    <li>A fixed Cloudflare Tunnel</li>
+                    <li>Access control such as Cloudflare Access</li>
+                    <li>OAuth or a separate authentication layer</li>
+                    <li>Separating read-tool and write-tool permissions</li>
+                    <li>Validating first in a separate test domain rather than your personal memory</li>
+                </ul>
+            </div>
+        </article>
+
     </div>
 
     <div class="empty" id="ts-empty" hidden>No results found.</div>

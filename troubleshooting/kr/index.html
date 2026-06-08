@@ -495,6 +495,49 @@ UnauthorizedAccess</code></pre>
             </div>
         </article>
 
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">Supabase</span>
+            </div>
+            <h2 class="subject">Supabase(무료)에 연결이 안 될 때</h2>
+            <p class="content">
+                무료 플랜의 Direct connection은 IPv6 전용이라, IPv6를 사용할 수 없는
+                네트워크에서는 연결이 실패합니다(host 도달 불가 / timeout).
+                Session pooler 연결 문자열(포트 5432)을 사용하세요.
+            </p>
+            <div class="detail">
+                <h3>원인</h3>
+                <p>Supabase 무료 플랜의 <strong>Direct connection</strong>은 IPv6 전용 주소만 제공합니다. 가정·사내 네트워크나 일부 클라우드 환경처럼 IPv6를 지원하지 않으면 호스트에 도달하지 못해 연결이 timeout 됩니다.</p>
+                <h3>해결</h3>
+                <p><strong>Session pooler</strong> 연결 문자열(포트 <code>5432</code>)을 사용하세요. Session pooler는 IPv4로 접속할 수 있어 IPv6 미지원 환경에서도 동작합니다.</p>
+                <ul>
+                    <li>✅ Session pooler — 포트 <code>5432</code></li>
+                    <li>❌ Transaction pooler — 포트 <code>6543</code> (사용하지 마세요)</li>
+                </ul>
+                <p>Transaction pooler(<code>6543</code>)는 트랜잭션 단위로 연결을 재사용·회수하기 때문에, 장수명(long-lived) 연결이나 prepared statement에 의존하는 클라이언트에서는 동작이 깨질 수 있습니다.</p>
+                <p>연결 문자열 위치: Supabase 대시보드 → Project Settings → Database → Connection string → <strong>Session pooler</strong>.</p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">설치</span>
+            </div>
+            <h2 class="subject">새 MCP 설정이 적용되지 않을 때 (재시작 필요)</h2>
+            <p class="content">
+                AI 설치 후에는 AI 클라이언트를 완전히 재시작해야
+                새 MCP 설정이 적용됩니다.
+            </p>
+            <div class="detail">
+                <p>Claude Desktop은 창을 닫고 트레이 아이콘에서 종료해도 백그라운드 <code>cowork-svc</code>(및 <code>k2g-mcp.exe</code>) 프로세스가 남아 옛 설정을 계속 사용할 수 있습니다.</p>
+                <ol>
+                    <li>작업 관리자(<code>Ctrl+Shift+Esc</code>)를 엽니다.</li>
+                    <li><code>cowork-svc</code> 프로세스가 사라졌는지 확인합니다. 남아 있다면 종료합니다.</li>
+                    <li>그래도 적용되지 않으면 PC를 재부팅하세요.</li>
+                </ol>
+            </div>
+        </article>
+
     </div>
 
     <div class="empty" id="ts-empty" hidden>검색 결과가 없습니다.</div>

@@ -495,6 +495,49 @@ UnauthorizedAccess</code></pre>
             </div>
         </article>
 
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">Supabase</span>
+            </div>
+            <h2 class="subject">When you can't connect to Supabase (free plan)</h2>
+            <p class="content">
+                On the free plan, the Direct connection is IPv6-only, so it fails on
+                networks without IPv6 (host unreachable / timeout).
+                Use the Session pooler connection string (port 5432).
+            </p>
+            <div class="detail">
+                <h3>Cause</h3>
+                <p>On Supabase's free plan, the <strong>Direct connection</strong> only provides an IPv6 address. On home/office networks or some cloud environments that don't support IPv6, the host is unreachable and the connection times out.</p>
+                <h3>Fix</h3>
+                <p>Use the <strong>Session pooler</strong> connection string (port <code>5432</code>). The Session pooler is reachable over IPv4, so it works even where IPv6 is unavailable.</p>
+                <ul>
+                    <li>✅ Session pooler — use port <code>5432</code></li>
+                    <li>❌ Transaction pooler — do not use port <code>6543</code></li>
+                </ul>
+                <p>The Transaction pooler (<code>6543</code>) reuses/recycles connections per transaction, so clients that rely on long-lived connections or prepared statements can break.</p>
+                <p>Where to find it: Supabase dashboard → Project Settings → Database → Connection string → <strong>Session pooler</strong>.</p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">Install</span>
+            </div>
+            <h2 class="subject">When new MCP settings aren't applied (restart required)</h2>
+            <p class="content">
+                After installing the AI, you must fully restart the AI client
+                for the new MCP settings to take effect.
+            </p>
+            <div class="detail">
+                <p>Even after you close the window and quit from the tray icon, Claude Desktop may leave the background <code>cowork-svc</code> (and <code>k2g-mcp.exe</code>) process running, which keeps using the old settings.</p>
+                <ol>
+                    <li>Open Task Manager (<code>Ctrl+Shift+Esc</code>).</li>
+                    <li>Check that the <code>cowork-svc</code> process is gone. If it's still there, end it.</li>
+                    <li>If it still doesn't take effect, reboot your PC.</li>
+                </ol>
+            </div>
+        </article>
+
     </div>
 
     <div class="empty" id="ts-empty" hidden>No results found.</div>

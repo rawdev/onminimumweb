@@ -277,6 +277,72 @@
 
         <article class="row">
             <div class="row-head">
+                <span class="tag">macOS</span>
+            </div>
+            <h2 class="subject">[macOS] Where to put MWeft — not in Downloads / Desktop / Documents</h2>
+            <p class="content">
+                On a Mac, unzip MWeft into your <strong>home folder</strong> (e.g. a folder
+                called "mweft"), not into Downloads, Desktop, or Documents.
+            </p>
+            <div class="detail">
+                <p>macOS privacy protection blocks apps from using files inside Downloads,
+                Desktop, Documents and iCloud Drive. If MWeft sits there, your AI client
+                (Claude, etc.) can't start the memory server and shows it as "failed".</p>
+                <p><strong>What to do:</strong> move the MWeft folder — and the folder where
+                your memory is stored — into your home folder. Then open the Manager, click
+                <strong>Install MCP</strong> again, and restart your AI client.</p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">macOS</span>
+            </div>
+            <h2 class="subject">[macOS] start-mweft.command won't open</h2>
+            <p class="content">
+                If double-clicking does nothing, <strong>right-click</strong> the file and
+                choose <strong>Open</strong> — only needed the first time.
+            </p>
+            <div class="detail">
+                <p>macOS blocks unsigned apps on first launch. Right-click the file →
+                <strong>Open</strong> → <strong>Open</strong> approves it once; after that a
+                normal double-click works.</p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">MCP</span>
+            </div>
+            <h2 class="subject">[Windows · macOS] The MCP server shows "failed" — check the log, then fix</h2>
+            <p class="content">
+                First try this, it fixes most cases: open the Manager, click
+                <strong>Install MCP</strong> again, then fully quit and reopen your AI
+                client (Mac: ⌘+Q). Still failing? Check the log.
+            </p>
+            <div class="detail">
+                <p>In your AI client, open the mweft server and click
+                <strong>View Logs</strong>. Read the last few lines and match the message:</p>
+                <ul>
+                    <li><strong>"No module named 'encodings'"</strong> (Mac) — MWeft is in a
+                    protected folder. Move it (and your memory folder) into your home folder,
+                    then re-install (see the macOS install-location tip above).</li>
+                    <li><strong>"Failed to spawn process" / "No such file or directory"</strong>
+                    — re-install the MCP from the Manager (Install MCP).</li>
+                    <li><strong>".mwf config file not found" / "startup aborted"</strong> —
+                    update to the latest version, then re-install the MCP from the Manager.</li>
+                    <li><strong>"DLL load failed" / "VC++ Redistributable"</strong> (Windows)
+                    — run <code>start-mweft.bat</code> again; if it keeps failing, install the
+                    Microsoft Visual C++ Redistributable (x64) from
+                    <code>aka.ms/vs/17/release/vc_redist.x64.exe</code>.</li>
+                </ul>
+                <p>If the log's time stamp doesn't change when you retry, the client hasn't
+                restarted the server — fully quit the AI client and open it again.</p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
                 <span class="tag">MCP</span>
             </div>
             <h2 class="subject">When MCP tools don't appear in Claude Desktop</h2>

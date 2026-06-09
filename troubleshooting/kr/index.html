@@ -277,6 +277,72 @@
 
         <article class="row">
             <div class="row-head">
+                <span class="tag">macOS</span>
+            </div>
+            <h2 class="subject">[macOS] MWeft를 어디에 둘까 — 다운로드/데스크탑/문서 폴더는 피하세요</h2>
+            <p class="content">
+                Mac에서는 MWeft 압축을 <strong>홈 폴더</strong>(예: "mweft" 폴더)에 푸세요.
+                다운로드·데스크탑·문서 폴더는 피합니다.
+            </p>
+            <div class="detail">
+                <p>macOS 개인정보 보호 기능은 앱이 다운로드·데스크탑·문서·iCloud Drive 안의
+                파일을 쓰는 것을 막습니다. MWeft가 거기 있으면 AI 클라이언트(Claude 등)가
+                메모리 서버를 시작하지 못하고 "failed"로 표시됩니다.</p>
+                <p><strong>해결:</strong> MWeft 폴더와 메모리가 저장되는 폴더를 홈 폴더로
+                옮기세요. 그런 다음 Manager를 열어 <strong>Install MCP</strong>를 다시 누르고,
+                AI 클라이언트를 재시작합니다.</p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">macOS</span>
+            </div>
+            <h2 class="subject">[macOS] start-mweft.command가 안 열릴 때</h2>
+            <p class="content">
+                더블클릭해도 아무 반응이 없으면, 파일을 <strong>우클릭</strong> 후
+                <strong>열기</strong>를 누르세요 — 처음 한 번만 하면 됩니다.
+            </p>
+            <div class="detail">
+                <p>macOS는 서명되지 않은 앱을 첫 실행 때 막습니다. 파일 우클릭 →
+                <strong>열기</strong> → <strong>열기</strong>로 한 번 승인하면, 이후에는 일반
+                더블클릭으로 실행됩니다.</p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
+                <span class="tag">MCP</span>
+            </div>
+            <h2 class="subject">[Windows · macOS] MCP 서버가 "failed"로 뜰 때 — 로그 확인 후 대응</h2>
+            <p class="content">
+                먼저 이걸 해보세요(대부분 해결됨): Manager에서 <strong>Install MCP</strong>를
+                다시 누른 뒤, AI 클라이언트를 완전히 종료(Mac: ⌘+Q)했다가 다시 켜기. 그래도
+                안 되면 로그를 확인합니다.
+            </p>
+            <div class="detail">
+                <p>AI 클라이언트에서 mweft 서버를 열고 <strong>View Logs</strong>(로그 보기)를
+                누릅니다. 마지막 줄을 보고 아래에서 메시지를 찾으세요:</p>
+                <ul>
+                    <li><strong>"No module named 'encodings'"</strong> (Mac) — MWeft가 보호
+                    폴더에 있습니다. 폴더(와 메모리 폴더)를 홈 폴더로 옮긴 뒤 다시 설치하세요
+                    (위의 macOS 설치 위치 항목 참고).</li>
+                    <li><strong>"Failed to spawn process" / "No such file or directory"</strong>
+                    — Manager에서 MCP를 다시 설치(Install MCP)하세요.</li>
+                    <li><strong>".mwf config file not found" / "startup aborted"</strong> —
+                    최신 버전으로 업데이트한 뒤 Manager에서 MCP를 다시 설치하세요.</li>
+                    <li><strong>"DLL load failed" / "VC++ Redistributable"</strong> (Windows)
+                    — <code>start-mweft.bat</code>를 다시 실행하세요. 계속 안 되면 Microsoft
+                    Visual C++ 재배포 패키지(x64)를
+                    <code>aka.ms/vs/17/release/vc_redist.x64.exe</code> 에서 설치하세요.</li>
+                </ul>
+                <p>다시 시도해도 로그의 시간(타임스탬프)이 안 바뀌면, 클라이언트가 서버를
+                다시 띄우지 않은 것입니다 — AI 클라이언트를 완전히 종료했다가 다시 켜세요.</p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
                 <span class="tag">MCP</span>
             </div>
             <h2 class="subject">Claude Desktop에서 MCP 기능이 확인되지 않을 때</h2>

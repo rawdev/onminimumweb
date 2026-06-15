@@ -364,6 +364,36 @@
 
         <article class="row">
             <div class="row-head">
+                <span class="tag">Codex</span>
+            </div>
+            <h2 class="subject">[Codex] 프로젝트별 AI로 설치했는데 MCP가 안 보일 때 — 폴더 신뢰(trust)</h2>
+            <p class="content">
+                Codex는 Desktop(데스크탑) 폴더에 대해 "이 폴더를 신뢰하겠습니까?"
+                trust prompt가 자동으로 뜨지 않을 수 있습니다. 폴더를 신뢰해야만
+                설치된 MCP가 정상 동작합니다.
+            </p>
+            <div class="detail">
+                <p>프로젝트별 AI로 설치하면, Codex가 해당 작업 폴더(예: Desktop)에 대한
+                trust prompt("이 폴더를 신뢰하겠습니까?")를 띄우고, <strong>신뢰함</strong>을
+                선택해야 그 폴더에 설치된 MCP가 동작합니다. 그런데 이 prompt가 자동으로
+                나타나지 않는 경우가 확인되었습니다.</p>
+                <p><strong>해결:</strong> 프로젝트 AI로 설치했는데 MCP가 안 뜬다면,
+                홈(사용자) 폴더 안의 <code>.codex/config.toml</code> 파일에 아래 2줄을
+                추가하고 Codex를 다시 시작하세요. 파일이 없으면 새로 만듭니다.
+                폴더 경로는 자신의 프로젝트 폴더 경로로 바꿉니다.</p>
+                <ul>
+                    <li>Windows: <code>C:\Users\&lt;사용자이름&gt;\.codex\config.toml</code></li>
+                    <li>macOS · Linux: <code>~/.codex/config.toml</code></li>
+                </ul>
+                <pre><code>[projects.'C:/Work/project']
+trust_level = "trusted"</code></pre>
+                <p>경로 구분자는 슬래시(<code>/</code>)를 사용하고, 작은따옴표(<code>'</code>)로
+                감쌉니다. 저장 후 Codex를 완전히 종료했다가 다시 실행하면 설정이 적용됩니다.</p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
                 <span class="tag">ChatGPT</span>
             </div>
             <h2 class="subject">ChatGPT에서 MWeft MCP를 사용하고 싶을 때</h2>

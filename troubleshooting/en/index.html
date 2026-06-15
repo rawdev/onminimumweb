@@ -364,6 +364,37 @@
 
         <article class="row">
             <div class="row-head">
+                <span class="tag">Codex</span>
+            </div>
+            <h2 class="subject">[Codex] Installed per-project but the MCP doesn't appear — trust the folder</h2>
+            <p class="content">
+                Codex may not automatically raise the "Do you trust this folder?"
+                trust prompt for the Desktop folder. The installed MCP only works
+                after you trust the folder.
+            </p>
+            <div class="detail">
+                <p>When you install as a per-project AI, Codex is supposed to show a trust
+                prompt ("Do you trust this folder?") for that working folder (e.g. Desktop),
+                and the MCP installed there only works once you choose <strong>Trust</strong>.
+                In some cases this prompt does not appear automatically.</p>
+                <p><strong>What to do:</strong> if you installed as a project AI but the MCP
+                doesn't show up, add the two lines below to the <code>.codex/config.toml</code>
+                file in your home (user) folder, then restart Codex. Create the file if it
+                doesn't exist. Replace the path with your own project folder path.</p>
+                <ul>
+                    <li>Windows: <code>C:\Users\&lt;username&gt;\.codex\config.toml</code></li>
+                    <li>macOS · Linux: <code>~/.codex/config.toml</code></li>
+                </ul>
+                <pre><code>[projects.'C:/Work/project']
+trust_level = "trusted"</code></pre>
+                <p>Use forward slashes (<code>/</code>) in the path and wrap it in single
+                quotes (<code>'</code>). After saving, fully quit Codex and relaunch it so the
+                setting takes effect.</p>
+            </div>
+        </article>
+
+        <article class="row">
+            <div class="row-head">
                 <span class="tag">ChatGPT</span>
             </div>
             <h2 class="subject">When you want to use MWeft MCP with ChatGPT</h2>
